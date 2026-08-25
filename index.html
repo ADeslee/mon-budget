@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+  <title>Mon Budget — Épargne & Dépenses</title>
+  <meta name="description" content="Gérez vos comptes et calculez vos épargnes de dépenses simplement." />
+
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#3B5D52" />
+
+  <!-- iOS -->
+  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAFMElEQVR4nO3dQXITSRRF0Q/BTnrawQrYBXOzCcbdwZjeRDNnF6yAYNproQdEQVnYUknKrPrvvXumdigc+fNWWiVZfvHw8a/vBYR6efQPAByJABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABDt1dE/wN7+ff/h7Nff/fP3Tj8JOniR8n+CL238U4SQwT6Aazf+KULwZv0c4N7NP+ox0JdtACM3LhH4sgxgxoYlAk92AczcqETgxy4A4BpWd4H2ukJfc2eIu1C9xb0QNsus+J57XMIYw+YE6PT7+ZuHt0Me58unz5u/lyBuwwkw2KjNvzzW1gjWFwBi2I4ADBHDdgRgjhjO4zboYNf83r7nY1X9iKHTc6UOOAEmGL1xR1si4ETgBIjGiUAAqF63kPdmEwDH+X1STwObADBGWgRWAXAKjJF0GlgFgLESIrALgFNgLPcI7AKoIoLRnCOwDMB5YEdxXVO7AFwH1YHj2loF4DigbtzW2CYAt8F05rTWFgE4DUSFy5rLB+AyCEUOay8dgMMA1KnPQDoA4F6yAahfeZwoz0LyY1GUF/wap58w0f0vzRRfgZc9Adw99fEqIz9yBT/IBZBw9T+30TtHoDgbqQAUFziN2oykAgBGkwlA7cqSTGlWMgEkOXe3p/udIDUSAShdUUZ5aqMrbX6VmfHJcI0pbXhVEicAMEv7AFSOUvxOYXbtAwBm4jkAnnXpVWeH5yit3wyncIQ6ufdtFs8F0flNcpwAGPb+ouVxlE4GngOEm/Hmus5v2DtFAMFmblSVCAgg1B4bVCGCtgHwBHiePTfmm4e3rWfZNgDMccRVufNJQACIxm3QIFuuxOtbmNd8/6Xv/e/rt/rj9Z8XH29vnAD46fT+/aX7+euvK937XyMA3ET97xUWBIBoBICbuHxuEQHgp9MNfGlDr7+uuPmrGr8btPOLJ8qO2qgd7wBVcQIgHAGEOeJOTee7Q20D6PxHFOr23JBfPn1uPcu2AWCuPSLofOVfEECwmRtUYfNXEUC8GRtVZfNX8WY41PY3tG19HCVtXwdY8HrAcUZ8LErnJ8BVnAA4Q/GKfi2eAyBa+wC6H6F4nsLs2gcAzEQAiCYRgMJRisdUZiYRADCLTAAqVxRozUomAGAGqQCUriyp1GYkFUCV3gInUZyNXADASJIBKF5p3KnORDKAKt0Fd6Q8C9kAgBGkA1C+8rhQn4F0AFX6A1DmsPbyAVR5DEKNy5pbBFDlMxAFTmttE0CV12C6cltjqwCq/AbUiePa2gVQ5Tmoo7muqWUAVb4DO4LzWtoGUOU9uL24r6F1AFX+A5wpYe3afzLcSHzK3DYJG39hfwKsJQ32VmlrFHUCrHEaPJa28RdRJ8Ba6sCfkrwWsSfAWuppkLzxFwSwkhICG/8XAniCawhs/N8RwAXqMbDpzyOAK6jEwKbfjgBu1C0GNv1tCGCQvYNgw49BAJPdGwYbfS4CQLTYV4KBKgJAOAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJAtP8B7md2SYSzcHQAAAAASUVORK5CYII=" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Mon Budget" />
+
+  <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAFMElEQVR4nO3dQXITSRRF0Q/BTnrawQrYBXOzCcbdwZjeRDNnF6yAYNproQdEQVnYUknKrPrvvXumdigc+fNWWiVZfvHw8a/vBYR6efQPAByJABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABDt1dE/wN7+ff/h7Nff/fP3Tj8JOniR8n+CL238U4SQwT6Aazf+KULwZv0c4N7NP+ox0JdtACM3LhH4sgxgxoYlAk92AczcqETgxy4A4BpWd4H2ukJfc2eIu1C9xb0QNsus+J57XMIYw+YE6PT7+ZuHt0Me58unz5u/lyBuwwkw2KjNvzzW1gjWFwBi2I4ADBHDdgRgjhjO4zboYNf83r7nY1X9iKHTc6UOOAEmGL1xR1si4ETgBIjGiUAAqF63kPdmEwDH+X1STwObADBGWgRWAXAKjJF0GlgFgLESIrALgFNgLPcI7AKoIoLRnCOwDMB5YEdxXVO7AFwH1YHj2loF4DigbtzW2CYAt8F05rTWFgE4DUSFy5rLB+AyCEUOay8dgMMA1KnPQDoA4F6yAahfeZwoz0LyY1GUF/wap58w0f0vzRRfgZc9Adw99fEqIz9yBT/IBZBw9T+30TtHoDgbqQAUFziN2oykAgBGkwlA7cqSTGlWMgEkOXe3p/udIDUSAShdUUZ5aqMrbX6VmfHJcI0pbXhVEicAMEv7AFSOUvxOYXbtAwBm4jkAnnXpVWeH5yit3wyncIQ6ufdtFs8F0flNcpwAGPb+ouVxlE4GngOEm/Hmus5v2DtFAMFmblSVCAgg1B4bVCGCtgHwBHiePTfmm4e3rWfZNgDMccRVufNJQACIxm3QIFuuxOtbmNd8/6Xv/e/rt/rj9Z8XH29vnAD46fT+/aX7+euvK937XyMA3ET97xUWBIBoBICbuHxuEQHgp9MNfGlDr7+uuPmrGr8btPOLJ8qO2qgd7wBVcQIgHAGEOeJOTee7Q20D6PxHFOr23JBfPn1uPcu2AWCuPSLofOVfEECwmRtUYfNXEUC8GRtVZfNX8WY41PY3tG19HCVtXwdY8HrAcUZ8LErnJ8BVnAA4Q/GKfi2eAyBa+wC6H6F4nsLs2gcAzEQAiCYRgMJRisdUZiYRADCLTAAqVxRozUomAGAGqQCUriyp1GYkFUCV3gInUZyNXADASJIBKF5p3KnORDKAKt0Fd6Q8C9kAgBGkA1C+8rhQn4F0AFX6A1DmsPbyAVR5DEKNy5pbBFDlMxAFTmttE0CV12C6cltjqwCq/AbUiePa2gVQ5Tmoo7muqWUAVb4DO4LzWtoGUOU9uL24r6F1AFX+A5wpYe3afzLcSHzK3DYJG39hfwKsJQ32VmlrFHUCrHEaPJa28RdRJ8Ba6sCfkrwWsSfAWuppkLzxFwSwkhICG/8XAniCawhs/N8RwAXqMbDpzyOAK6jEwKbfjgBu1C0GNv1tCGCQvYNgw49BAJPdGwYbfS4CQLTYV4KBKgJAOAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJAtP8B7md2SYSzcHQAAAAASUVORK5CYII=" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <div class="logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAFMElEQVR4nO3dQXITSRRF0Q/BTnrawQrYBXOzCcbdwZjeRDNnF6yAYNproQdEQVnYUknKrPrvvXumdigc+fNWWiVZfvHw8a/vBYR6efQPAByJABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABCNABDt1dE/wN7+ff/h7Nff/fP3Tj8JOniR8n+CL238U4SQwT6Aazf+KULwZv0c4N7NP+ox0JdtACM3LhH4sgxgxoYlAk92AczcqETgxy4A4BpWd4H2ukJfc2eIu1C9xb0QNsus+J57XMIYw+YE6PT7+ZuHt0Me58unz5u/lyBuwwkw2KjNvzzW1gjWFwBi2I4ADBHDdgRgjhjO4zboYNf83r7nY1X9iKHTc6UOOAEmGL1xR1si4ETgBIjGiUAAqF63kPdmEwDH+X1STwObADBGWgRWAXAKjJF0GlgFgLESIrALgFNgLPcI7AKoIoLRnCOwDMB5YEdxXVO7AFwH1YHj2loF4DigbtzW2CYAt8F05rTWFgE4DUSFy5rLB+AyCEUOay8dgMMA1KnPQDoA4F6yAahfeZwoz0LyY1GUF/wap58w0f0vzRRfgZc9Adw99fEqIz9yBT/IBZBw9T+30TtHoDgbqQAUFziN2oykAgBGkwlA7cqSTGlWMgEkOXe3p/udIDUSAShdUUZ5aqMrbX6VmfHJcI0pbXhVEicAMEv7AFSOUvxOYXbtAwBm4jkAnnXpVWeH5yit3wyncIQ6ufdtFs8F0flNcpwAGPb+ouVxlE4GngOEm/Hmus5v2DtFAMFmblSVCAgg1B4bVCGCtgHwBHiePTfmm4e3rWfZNgDMccRVufNJQACIxm3QIFuuxOtbmNd8/6Xv/e/rt/rj9Z8XH29vnAD46fT+/aX7+euvK937XyMA3ET97xUWBIBoBICbuHxuEQHgp9MNfGlDr7+uuPmrGr8btPOLJ8qO2qgd7wBVcQIgHAGEOeJOTee7Q20D6PxHFOr23JBfPn1uPcu2AWCuPSLofOVfEECwmRtUYfNXEUC8GRtVZfNX8WY41PY3tG19HCVtXwdY8HrAcUZ8LErnJ8BVnAA4Q/GKfi2eAyBa+wC6H6F4nsLs2gcAzEQAiCYRgMJRisdUZiYRADCLTAAqVxRozUomAGAGqQCUriyp1GYkFUCV3gInUZyNXADASJIBKF5p3KnORDKAKt0Fd6Q8C9kAgBGkA1C+8rhQn4F0AFX6A1DmsPbyAVR5DEKNy5pbBFDlMxAFTmttE0CV12C6cltjqwCq/AbUiePa2gVQ5Tmoo7muqWUAVb4DO4LzWtoGUOU9uL24r6F1AFX+A5wpYe3afzLcSHzK3DYJG39hfwKsJQ32VmlrFHUCrHEaPJa28RdRJ8Ba6sCfkrwWsSfAWuppkLzxFwSwkhICG/8XAniCawhs/N8RwAXqMbDpzyOAK6jEwKbfjgBu1C0GNv1tCGCQvYNgw49BAJPdGwYbfS4CQLTYV4KBKgJAOAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJANAJAtP8B7md2SYSzcHQAAAAASUVORK5CYII=" alt="" /></div>
+        <div>
+          <p class="app-title">Mon Budget</p>
+          <p class="app-subtitle">épargne &amp; dépenses</p>
+        </div>
+      </div>
+      <button class="icon-btn" id="helpBtn" aria-label="Aide installation">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </button>
+    </div>
+
+    <!-- Install banner -->
+    <div class="install-banner" id="installBanner">
+      <p>Installez l'app sur votre écran d'accueil pour l'utiliser hors-ligne.</p>
+      <button id="installBtn">Installer</button>
+    </div>
+
+    <!-- Note -->
+    <div class="note-banner">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M7 15h0M2 9.5h20"/></svg>
+      <p>Vos données sont enregistrées automatiquement sur cet appareil. Exportez une sauvegarde si vous changez de téléphone.</p>
+    </div>
+
+    <!-- Salary card -->
+    <div class="card">
+      <label class="field-label" for="salaryInput">Revenu net mensuel</label>
+      <div class="salary-row">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
+        <input type="number" inputmode="decimal" id="salaryInput" placeholder="0.00" />
+        <span class="salary-currency">€</span>
+      </div>
+    </div>
+
+    <!-- Bilan card -->
+    <div class="bilan-card">
+      <p class="bilan-title">Bilan du mois</p>
+      <div class="bilan-body">
+        <div class="gauge-wrap">
+          <svg viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="10" />
+            <circle id="gaugeCircle" cx="60" cy="60" r="54" fill="none" stroke="#7FA895" stroke-width="10"
+              stroke-linecap="round" stroke-dasharray="339.29" stroke-dashoffset="339.29"
+              transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.4s ease, stroke 0.3s;" />
+          </svg>
+          <div class="gauge-center">
+            <span class="gauge-pct" id="gaugePct">—</span>
+            <span class="gauge-label">disponible</span>
+          </div>
+        </div>
+        <div class="bilan-lines">
+          <div class="bilan-line"><span>Salaire</span><span id="lineSalary">0,00 €</span></div>
+          <div class="bilan-line"><span>Charges fixes</span><span id="lineFixed">− 0,00 €</span></div>
+          <div class="bilan-line"><span>Provisions</span><span id="lineProv">− 0,00 €</span></div>
+          <div class="bilan-divider"></div>
+          <div class="bilan-total"><span>Reste à vivre</span><span class="bilan-total-value" id="lineTotal">0,00 €</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add expense form -->
+    <div class="card">
+      <p class="form-title">Ajouter une dépense</p>
+      <form id="expenseForm">
+        <input type="text" class="text-input" id="nameInput" placeholder="Nom (ex: Loyer, Vacances...)" />
+        <input type="number" inputmode="decimal" class="text-input" id="amountInput" placeholder="Montant total (€)" />
+
+        <div class="type-toggle">
+          <button type="button" class="active" data-type="fixe">Mensuelle fixe</button>
+          <button type="button" data-type="provision">Provision / Épargne</button>
+        </div>
+
+        <div class="months-block" id="monthsBlock">
+          <label for="monthsInput">Dans combien de mois devez-vous payer cette somme ?</label>
+          <input type="number" inputmode="numeric" class="text-input" id="monthsInput" placeholder="Ex: 12" style="margin-bottom:0;" />
+          <p class="months-hint" id="monthsHint"></p>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Ajouter la dépense
+        </button>
+      </form>
+    </div>
+
+    <!-- Lists -->
+    <div id="listsContainer"></div>
+
+    <!-- Export / import -->
+    <div class="data-actions">
+      <button id="exportBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exporter les données
+      </button>
+      <button id="importBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Importer une sauvegarde
+      </button>
+      <input type="file" id="importFile" accept="application/json" />
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Help modal -->
+  <div class="modal-overlay" id="helpOverlay">
+    <div class="modal-sheet">
+      <div class="modal-head">
+        <p>Installer sur l'écran d'accueil</p>
+        <button class="modal-close" id="helpClose">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="help-tabs">
+        <button class="active" data-tab="ios">iPhone (Safari)</button>
+        <button data-tab="android">Android (Chrome)</button>
+      </div>
+      <div class="help-panel visible" id="panel-ios">
+        <div class="help-step">
+          <div class="help-step-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
+          <p>Appuyez sur l'icône Partager en bas de Safari.</p>
+        </div>
+        <div class="help-step">
+          <div class="help-step-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <p>Faites défiler et choisissez "Sur l'écran d'accueil".</p>
+        </div>
+        <div class="help-step">
+          <div class="help-step-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <p>Confirmez en appuyant sur "Ajouter" en haut à droite.</p>
+        </div>
+      </div>
+      <div class="help-panel" id="panel-android">
+        <div class="help-step">
+          <div class="help-step-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></div>
+          <p>Appuyez sur le menu ⋮ en haut à droite de Chrome.</p>
+        </div>
+        <div class="help-step">
+          <div class="help-step-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+          <p>Choisissez "Installer l'application" (ou "Ajouter à l'écran d'accueil").</p>
+        </div>
+        <div class="help-step">
+          <div class="help-step-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          <p>Confirmez l'installation.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
