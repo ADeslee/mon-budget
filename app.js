@@ -222,7 +222,7 @@
     const legend = d.catBreakdown.map((c) => {
       const pct = Math.round((c.total / d.catGrandTotal) * 100);
       return `<div class="legend-row">
-        <span class="legend-dot" style="background:${c.cat.color}"></span>
+        <span class="legend-icon" style="background:${c.cat.color}">${c.cat.icon()}</span>
         <span class="legend-label">${escapeHtml(c.cat.label)}</span>
         <span class="legend-value">${formatEUR(c.total)}<small>/mois · ${pct}%</small></span>
       </div>`;
