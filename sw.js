@@ -1,4 +1,4 @@
-const CACHE_NAME = "mon-budget-cache-v3";
+const CACHE_NAME = "mon-budget-cache-v4";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -22,18 +22,17 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+// Réseau en priorité : on va toujours chercher la dernière version en ligne.
+// Le cache ne sert que si l'appareil est hors-ligne.
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request)
-        .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          return response;
-        })
-        .catch(() => cached);
-    })
+    fetch(event.request)
+      .then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });

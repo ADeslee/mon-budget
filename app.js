@@ -55,6 +55,12 @@
   }
 
   function uid() { return Math.random().toString(36).slice(2, 10); }
+  function parseNum(str) {
+    if (str === null || str === undefined || str === "") return 0;
+    const cleaned = String(str).trim().replace(",", ".").replace(/[^0-9.\-]/g, "");
+    const n = Number(cleaned);
+    return isNaN(n) ? 0 : n;
+  }
   function formatEUR(n) {
     const v = Number(n) || 0;
     return v.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " €";
@@ -132,7 +138,7 @@
 
   function renderAccueil() {
     const d = computeDerived();
-    salaryInput.value = state.salary ? state.salary : "";
+    salaryInput.value = state.salary ? String(state.salary).replace(".", ",") : "";
 
     document.getElementById("lineSalary").textContent = formatEUR(d.salaryNum);
     document.getElementById("lineFixed").textContent = "− " + formatEUR(d.fixedTotal);
@@ -331,7 +337,7 @@
   const targetHint = document.getElementById("targetHint");
 
   function updatePeriodiqueHint() {
-    const amount = Number(amountInput.value);
+    const amount = parseNum(amountInput.value);
     if (currentType === "periodique" && amount > 0 && selectedMonths.length > 0) {
       const monthly = (amount * selectedMonths.length) / 12;
       monthsHint.textContent = `→ ${formatEUR(monthly)}/mois à provisionner (${selectedMonths.length}x/an)`;
@@ -340,7 +346,7 @@
     }
   }
   function updateTargetHint() {
-    const amount = Number(amountInput.value);
+    const amount = parseNum(amountInput.value);
     const val = targetMonthInput.value;
     if (currentType === "provision" && amount > 0 && val) {
       const [ty, tm] = val.split("-").map(Number);
@@ -357,7 +363,7 @@
   document.getElementById("expenseForm").addEventListener("submit", (e) => {
     e.preventDefault();
     const name = nameInput.value.trim();
-    const amount = Number(amountInput.value);
+    const amount = parseNum(amountInput.value);
 
     if (!name || !amount || amount <= 0) { showToast("Nom et montant valides requis"); return; }
     if (currentType === "periodique" && selectedMonths.length === 0) { showToast("Sélectionnez au moins un mois"); return; }
@@ -384,7 +390,7 @@
   });
 
   salaryInput.addEventListener("input", () => {
-    state.salary = Number(salaryInput.value) || 0;
+    state.salary = parseNum(salaryInput.value) || 0;
     saveState();
     renderAccueil();
   });

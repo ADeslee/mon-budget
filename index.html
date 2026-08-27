@@ -43,7 +43,7 @@
         <label class="field-label" for="salaryInput">Revenu net mensuel</label>
         <div class="salary-row">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>
-          <input type="number" inputmode="decimal" id="salaryInput" placeholder="0.00" />
+          <input type="text" inputmode="decimal" id="salaryInput" placeholder="0,00" />
           <span class="salary-currency">€</span>
         </div>
       </div>
@@ -90,7 +90,7 @@
         <p class="form-title">Ajouter une dépense</p>
         <form id="expenseForm">
           <input type="text" class="text-input" id="nameInput" placeholder="Nom (ex: Loyer, Vacances...)" />
-          <input type="number" inputmode="decimal" class="text-input" id="amountInput" placeholder="Montant (€)" />
+          <input type="text" inputmode="decimal" class="text-input" id="amountInput" placeholder="Montant (ex: 45,50)" />
 
           <label class="field-label">Catégorie</label>
           <div class="cat-scroll" id="catScroll"></div>
