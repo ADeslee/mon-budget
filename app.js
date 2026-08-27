@@ -34,6 +34,9 @@
   function iconRepeat() { return svgWrap('<path d="M4 7h12l-3-3M20 17H8l3 3"/>'); }
   function iconHeart() { return svgWrap('<path d="M12 20s-7-4.5-9-9c-1.5-3 1-6 4-6 2 0 3.5 1.5 5 3 1.5-1.5 3-3 5-3 3 0 5.5 3 4 6-2 4.5-9 9-9 9z"/>'); }
   function iconTag() { return svgWrap('<path d="M20 12l-8 8-9-9V4h7l10 8z"/><circle cx="7.5" cy="7.5" r="1.1" fill="currentColor"/>'); }
+  function iconEdit() { return svgWrap('<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>'); }
+  function iconCheck() { return svgWrap('<polyline points="20 6 9 17 4 12"/>'); }
+  function iconUndo() { return svgWrap('<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-2"/>'); }
 
   // ---------- State ----------
   let state = { salary: 0, theme: "bleu", expenses: [] };
@@ -86,7 +89,7 @@
   function computeDerived() {
     const fixed = state.expenses.filter((e) => e.type === "fixe");
     const periodique = state.expenses.filter((e) => e.type === "periodique");
-    const provisions = state.expenses.filter((e) => e.type === "provision");
+    const provisionsAll = state.expenses.filter((e) => e.type === "provision");
 
     const fixedTotal = fixed.reduce((s, e) => s + (Number(e.amount) || 0), 0);
     const periodiqueMonthlyTotal = periodique.reduce((s, e) => {
@@ -94,7 +97,7 @@
       return s + ((Number(e.amount) || 0) * nMonths) / 12;
     }, 0);
 
-    const provisionsWithMeta = provisions.map((e) => {
+    const provisionsAllMeta = provisionsAll.map((e) => {
       const [ty, tm] = (e.targetMonth || "").split("-").map(Number);
       let monthsRemaining = 1;
       if (ty && tm) {
@@ -105,19 +108,36 @@
       const dueThisMonth = ty === currentYear && tm === currentMonth;
       return Object.assign({}, e, { monthsRemaining, monthly, dueThisMonth, targetYear: ty, targetMonthNum: tm });
     });
-    const provisionsMonthlyTotal = provisionsWithMeta.reduce((s, e) => s + e.monthly, 0);
+    const provisions = provisionsAllMeta.filter((e) => !e.paid);
+    const provisionsPaid = provisionsAllMeta.filter((e) => e.paid);
+    const provisionsMonthlyTotal = provisions.reduce((s, e) => s + e.monthly, 0);
 
     const periodiqueDueThisMonth = periodique.filter((e) => (e.months || []).includes(currentMonth));
-    const provisionsDueThisMonth = provisionsWithMeta.filter((e) => e.dueThisMonth);
+    const provisionsDueThisMonth = provisions.filter((e) => e.dueThisMonth);
 
     const salaryNum = Number(state.salary) || 0;
     const resteAVivre = salaryNum - fixedTotal - periodiqueMonthlyTotal - provisionsMonthlyTotal;
 
+    // Répartition par catégorie (coût mensuel lissé)
+    const catTotals = {};
+    fixed.forEach((e) => { catTotals[e.category] = (catTotals[e.category] || 0) + (Number(e.amount) || 0); });
+    periodique.forEach((e) => {
+      const nMonths = (e.months || []).length || 1;
+      catTotals[e.category] = (catTotals[e.category] || 0) + ((Number(e.amount) || 0) * nMonths) / 12;
+    });
+    provisions.forEach((e) => { catTotals[e.category] = (catTotals[e.category] || 0) + e.monthly; });
+    const catBreakdown = Object.keys(catTotals)
+      .map((id) => ({ cat: catById(id), total: catTotals[id] }))
+      .filter((c) => c.total > 0.004)
+      .sort((a, b) => b.total - a.total);
+    const catGrandTotal = catBreakdown.reduce((s, c) => s + c.total, 0);
+
     return {
-      fixed, periodique, provisions: provisionsWithMeta,
+      fixed, periodique, provisions, provisionsPaid,
       fixedTotal, periodiqueMonthlyTotal, provisionsMonthlyTotal,
       salaryNum, resteAVivre,
       periodiqueDueThisMonth, provisionsDueThisMonth,
+      catBreakdown, catGrandTotal,
     };
   }
 
@@ -139,6 +159,9 @@
   function renderAccueil() {
     const d = computeDerived();
     salaryInput.value = state.salary ? String(state.salary).replace(".", ",") : "";
+
+    const bilanTitleEl = document.getElementById("bilanTitle");
+    if (bilanTitleEl) bilanTitleEl.textContent = `Bilan de ${MONTH_NAMES_FULL[currentMonth - 1]} ${currentYear}`;
 
     document.getElementById("lineSalary").textContent = formatEUR(d.salaryNum);
     document.getElementById("lineFixed").textContent = "− " + formatEUR(d.fixedTotal);
@@ -171,6 +194,44 @@
     } else {
       alertCard.style.display = "none";
     }
+
+    renderCatChart(d);
+  }
+
+  function renderCatChart(d) {
+    const card = document.getElementById("catChartCard");
+    if (!card) return;
+    if (d.catBreakdown.length === 0) {
+      card.style.display = "none";
+      return;
+    }
+    card.style.display = "block";
+    const size = 140, r = 54, cx = 70, cy = 70;
+    const circumference = 2 * Math.PI * r;
+    let offsetAcc = 0;
+    const segments = d.catBreakdown.map((c) => {
+      const frac = c.total / d.catGrandTotal;
+      const len = frac * circumference;
+      const seg = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.cat.color}" stroke-width="16"
+        stroke-dasharray="${len} ${circumference - len}" stroke-dashoffset="${-offsetAcc}"
+        transform="rotate(-90 ${cx} ${cy})" />`;
+      offsetAcc += len;
+      return seg;
+    }).join("");
+
+    const legend = d.catBreakdown.map((c) => {
+      const pct = Math.round((c.total / d.catGrandTotal) * 100);
+      return `<div class="legend-row">
+        <span class="legend-dot" style="background:${c.cat.color}"></span>
+        <span class="legend-label">${escapeHtml(c.cat.label)}</span>
+        <span class="legend-value">${formatEUR(c.total)}<small>/mois · ${pct}%</small></span>
+      </div>`;
+    }).join("");
+
+    document.getElementById("catChartBody").innerHTML = `
+      <div class="donut-wrap"><svg viewBox="0 0 ${size} ${size}">${segments}</svg></div>
+      <div class="legend-list">${legend}</div>
+    `;
   }
 
   // ---------- Render: Dépenses ----------
@@ -178,8 +239,9 @@
 
   function expenseMeta(exp, d) {
     if (exp.type === "provision") {
-      const meta = d.provisions.find((p) => p.id === exp.id);
+      const meta = d.provisions.concat(d.provisionsPaid).find((p) => p.id === exp.id);
       const label = meta && meta.targetMonthNum ? `${MONTH_NAMES_FULL[meta.targetMonthNum - 1]} ${meta.targetYear}` : "échéance non définie";
+      if (exp.paid) return `${formatEUR(exp.amount)} · échéance ${label}`;
       return `${formatEUR(exp.amount)} pour ${label} · ${formatEUR(meta ? meta.monthly : 0)}/mois` + (meta && meta.dueThisMonth ? `<span class="due-badge">CE MOIS-CI</span>` : "");
     }
     if (exp.type === "periodique") {
@@ -190,23 +252,41 @@
     return "chaque mois";
   }
 
-  function renderExpenseRow(exp, d) {
+  function renderExpenseRow(exp, d, opts) {
+    opts = opts || {};
     const cat = catById(exp.category);
     const row = document.createElement("div");
-    row.className = "expense-row";
+    row.className = "expense-row" + (exp.paid ? " is-paid" : "");
     row.style.setProperty("--cat-color", cat.color);
+    const payToggle = exp.type === "provision"
+      ? `<button class="pay-btn${exp.paid ? " active" : ""}" aria-label="${exp.paid ? "Réactiver" : "Marquer comme payée"}" title="${exp.paid ? "Réactiver" : "Marquer comme payée"}">${exp.paid ? iconUndo() : iconCheck()}</button>`
+      : "";
     row.innerHTML = `
       <div class="expense-icon">${cat.icon()}</div>
       <div class="expense-body">
-        <p class="expense-name">${escapeHtml(exp.name)}</p>
+        <p class="expense-name">${escapeHtml(exp.name)}${exp.paid ? '<span class="paid-badge">PAYÉE</span>' : ""}</p>
         <p class="expense-meta">${expenseMeta(exp, d)}</p>
       </div>
       <div class="expense-right">
         <span class="expense-amount">${formatEUR(exp.amount)}</span>
+        ${payToggle}
+        <button class="edit-btn" aria-label="Modifier">${iconEdit()}</button>
         <button class="delete-btn" aria-label="Supprimer">${svgWrap('<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>')}</button>
       </div>`;
     row.querySelector(".delete-btn").addEventListener("click", () => deleteExpense(exp.id));
+    row.querySelector(".edit-btn").addEventListener("click", () => startEdit(exp));
+    const payBtn = row.querySelector(".pay-btn");
+    if (payBtn) payBtn.addEventListener("click", () => togglePaid(exp.id));
     return row;
+  }
+
+  function togglePaid(id) {
+    const exp = state.expenses.find((e) => e.id === id);
+    if (!exp) return;
+    exp.paid = !exp.paid;
+    saveState();
+    renderAll();
+    showToast(exp.paid ? "Provision marquée comme payée" : "Provision réactivée");
   }
 
   function renderDepenses() {
@@ -241,6 +321,20 @@
       empty.className = "empty-state";
       empty.innerHTML = `<p>Aucune dépense pour l'instant.</p><p>Ajoutez votre premier loyer, abonnement ou projet d'épargne ci-dessus.</p>`;
       listsContainer.appendChild(empty);
+    }
+
+    if (d.provisionsPaid.length > 0) {
+      const section = document.createElement("div");
+      section.className = "section";
+      const head = document.createElement("div");
+      head.className = "section-head";
+      head.innerHTML = `<p>Provisions payées</p><p>${d.provisionsPaid.length}</p>`;
+      section.appendChild(head);
+      const list = document.createElement("div");
+      list.className = "section-list";
+      d.provisionsPaid.forEach((exp) => list.appendChild(renderExpenseRow(exp, d)));
+      section.appendChild(list);
+      listsContainer.appendChild(section);
     }
   }
 
@@ -321,6 +415,7 @@
   const monthsBlock = document.getElementById("monthsBlock");
   const targetBlock = document.getElementById("targetBlock");
   let currentType = "fixe";
+  let editingId = null;
   typeButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       currentType = btn.dataset.type;
@@ -369,15 +464,29 @@
     if (currentType === "periodique" && selectedMonths.length === 0) { showToast("Sélectionnez au moins un mois"); return; }
     if (currentType === "provision" && !targetMonthInput.value) { showToast("Indiquez une échéance"); return; }
 
-    const expense = { id: uid(), name, amount, category: currentCategory, type: currentType };
-    if (currentType === "periodique") expense.months = [...selectedMonths].sort((a, b) => a - b);
-    if (currentType === "provision") expense.targetMonth = targetMonthInput.value;
+    if (editingId) {
+      const exp = state.expenses.find((x) => x.id === editingId);
+      if (exp) {
+        exp.name = name; exp.amount = amount; exp.category = currentCategory; exp.type = currentType;
+        delete exp.months; delete exp.targetMonth;
+        if (currentType === "periodique") exp.months = [...selectedMonths].sort((a, b) => a - b);
+        if (currentType === "provision") exp.targetMonth = targetMonthInput.value;
+      }
+      showToast("Dépense modifiée");
+    } else {
+      const expense = { id: uid(), name, amount, category: currentCategory, type: currentType };
+      if (currentType === "periodique") expense.months = [...selectedMonths].sort((a, b) => a - b);
+      if (currentType === "provision") expense.targetMonth = targetMonthInput.value;
+      state.expenses.push(expense);
+      showToast("Dépense ajoutée");
+    }
 
-    state.expenses.push(expense);
     saveState();
     renderAll();
-    showToast("Dépense ajoutée");
+    resetForm();
+  });
 
+  function resetForm() {
     nameInput.value = ""; amountInput.value = ""; targetMonthInput.value = "";
     monthsHint.textContent = ""; targetHint.textContent = "";
     selectedMonths = [];
@@ -386,8 +495,37 @@
     typeButtons.forEach((b) => b.classList.toggle("active", b.dataset.type === "fixe"));
     monthsBlock.classList.remove("visible");
     targetBlock.classList.remove("visible");
+    currentCategory = CATEGORIES[0].id;
+    catScroll.querySelectorAll(".cat-chip").forEach((c) => c.classList.toggle("active", c.dataset.cat === currentCategory));
+    editingId = null;
+    document.getElementById("formTitle").textContent = "Ajouter une dépense";
+    document.getElementById("submitBtnLabel").textContent = "Ajouter la dépense";
+    document.getElementById("cancelEditBtn").style.display = "none";
+  }
+
+  function startEdit(exp) {
+    editingId = exp.id;
+    nameInput.value = exp.name;
+    amountInput.value = String(exp.amount).replace(".", ",");
+    currentCategory = exp.category;
+    catScroll.querySelectorAll(".cat-chip").forEach((c) => c.classList.toggle("active", c.dataset.cat === currentCategory));
+    currentType = exp.type;
+    typeButtons.forEach((b) => b.classList.toggle("active", b.dataset.type === currentType));
+    monthsBlock.classList.toggle("visible", currentType === "periodique");
+    targetBlock.classList.toggle("visible", currentType === "provision");
+    selectedMonths = currentType === "periodique" ? [...(exp.months || [])] : [];
+    monthGrid.querySelectorAll(".month-pill").forEach((p, idx) => p.classList.toggle("active", selectedMonths.includes(idx + 1)));
+    targetMonthInput.value = currentType === "provision" ? (exp.targetMonth || "") : "";
+    updatePeriodiqueHint(); updateTargetHint();
+    document.getElementById("formTitle").textContent = "Modifier la dépense";
+    document.getElementById("submitBtnLabel").textContent = "Enregistrer les modifications";
+    document.getElementById("cancelEditBtn").style.display = "block";
+    switchTab("depenses");
+    document.getElementById("expenseForm").scrollIntoView({ behavior: "smooth", block: "start" });
     nameInput.focus();
-  });
+  }
+
+  document.getElementById("cancelEditBtn").addEventListener("click", resetForm);
 
   salaryInput.addEventListener("input", () => {
     state.salary = parseNum(salaryInput.value) || 0;
@@ -446,6 +584,7 @@
           type: exp.type === "periodique" ? "periodique" : (exp.type === "provision" ? "provision" : "fixe"),
           months: exp.months || undefined,
           targetMonth: exp.targetMonth || undefined,
+          paid: exp.type === "provision" ? !!exp.paid : undefined,
         }));
         saveState();
         applyTheme();
